@@ -1,0 +1,118 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tourze\WarehouseOperationBundle\Controller;
+
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Tourze\EasyAdminEnumFieldBundle\Field\EnumField;
+use Tourze\WarehouseOperationBundle\Entity\OutboundTask;
+use Tourze\WarehouseOperationBundle\Enum\TaskStatus;
+
+/**
+ * @template TEntity of OutboundTask
+ * @extends AbstractCrudController<TEntity>
+ */
+#[AdminCrud(routePath: '/warehouse-operation/outbound-task', routeName: 'warehouse_operation_outbound_task')]
+final class OutboundTaskCrudController extends AbstractCrudController
+{
+    /**
+     * @return class-string<OutboundTask>
+     */
+    public static function getEntityFqcn(): string
+    {
+        return OutboundTask::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('出库任务')
+            ->setEntityLabelInPlural('出库任务')
+            ->setPageTitle('index', '出库任务列表')
+            ->setPageTitle('detail', '出库任务详情')
+            ->setPageTitle('edit', '编辑出库任务')
+            ->setPageTitle('new', '新建出库任务')
+        ;
+    }
+
+    public function configureFields(string $pageName): iterable
+    {
+        yield IdField::new('id', 'ID')
+            ->hideOnForm()
+        ;
+
+        $statusField = EnumField::new('status', '任务状态');
+        $statusField->setEnumCases(TaskStatus::cases());
+        yield $statusField->setHelp('出库任务状态，默认为待分配');
+
+        yield IntegerField::new('priority', '优先级')
+            ->setHelp('任务优先级，范围1-100，默认为1')
+        ;
+
+        yield ArrayField::new('data', '任务数据')
+            ->setHelp('出库任务相关的JSON数据')
+            ->hideOnIndex()
+        ;
+
+        yield IntegerField::new('assignedWorker', '分配的作业员ID')
+            ->setHelp('分配的作业员ID，可选')
+        ;
+
+        yield DateTimeField::new('assignedAt', '分配时间')
+            ->setHelp('任务分配时间')
+            ->hideOnForm()
+        ;
+
+        yield DateTimeField::new('startedAt', '开始时间')
+            ->setHelp('任务开始时间')
+            ->hideOnForm()
+        ;
+
+        yield DateTimeField::new('completedAt', '完成时间')
+            ->setHelp('任务完成时间')
+            ->hideOnForm()
+        ;
+
+        yield TextareaField::new('notes', '备注')
+            ->setHelp('任务备注信息，可选，最多1000个字符')
+            ->hideOnIndex()
+        ;
+
+        yield DateTimeField::new('createTime', '创建时间')
+            ->hideOnForm()
+        ;
+
+        yield DateTimeField::new('updateTime', '更新时间')
+            ->hideOnForm()
+        ;
+
+        yield TextField::new('createdBy', '创建者')
+            ->hideOnForm()
+            ->hideOnIndex()
+        ;
+
+        yield TextField::new('updatedBy', '更新者')
+            ->hideOnForm()
+            ->hideOnIndex()
+        ;
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add('status')
+            ->add('priority')
+            ->add('assignedWorker')
+        ;
+    }
+}

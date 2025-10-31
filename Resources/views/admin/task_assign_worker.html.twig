@@ -1,0 +1,100 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}
+    分配作业员 - {{ task.description }}
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">任务信息</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>任务ID:</strong> {{ task.id }}</p>
+                            <p><strong>任务类型:</strong> {{ task.type.value }}</p>
+                            <p><strong>任务状态:</strong>
+                                <span class="badge badge-{{ task.status.value == 'pending' ? 'secondary' : 'info' }}">
+                                    {{ task.status.value }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>当前优先级:</strong> {{ task.priority }}</p>
+                            <p><strong>作业位置:</strong> {{ task.location }}</p>
+                            <p><strong>当前作业员:</strong>
+                                {% if task.assignedWorker %}
+                                    作业员 #{{ task.assignedWorker }}
+                                {% else %}
+                                    <span class="text-muted">未分配</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% if task.description %}
+                        <div class="mt-3">
+                            <p><strong>任务描述:</strong></p>
+                            <p class="text-muted">{{ task.description }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">分配作业员</h5>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form_row(form.workerId) }}
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mt-4">
+                                {{ form_widget(form.assign) }}
+                                <a href="{{ path('admin') }}" class="btn btn-secondary ml-2">取消</a>
+                            </div>
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if form.workerId.vars.choices|length > 0 %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">可用作业员信息</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            系统将根据任务类型和作业员技能进行智能匹配，建议选择技能匹配度最高的作业员。
+                        </div>
+                        <div class="row">
+                            {% for choice in form.workerId.vars.choices %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="border rounded p-3">
+                                        <strong>{{ choice.label }}</strong>
+                                        <small class="text-muted d-block">作业员ID: {{ choice.value }}</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

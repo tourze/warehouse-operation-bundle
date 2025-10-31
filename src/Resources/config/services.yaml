@@ -1,0 +1,92 @@
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: false
+
+  Tourze\WarehouseOperationBundle\Service\:
+    resource: '../../Service/'
+
+  Tourze\WarehouseOperationBundle\Repository\:
+    resource: '../../Repository/'
+    tags: ['doctrine.repository_service']
+
+  Tourze\WarehouseOperationBundle\Controller\:
+    resource: '../../Controller/'
+    tags: ['controller.service_arguments']
+
+#  Tourze\WarehouseOperationBundle\EventSubscriber\:
+#    resource: '../../EventSubscriber/'
+
+  # 显式配置需要被测试访问的服务为 public
+  Tourze\WarehouseOperationBundle\Service\QualityControlService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\TaskSchedulingService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\ConfigService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Count\CountAnalysisService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Count\CountDataValidatorService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Count\CountDiscrepancyHandlerService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Outbound\OrderProcessingService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Quality\QualityControlService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Quality\Validator\QualityCheckValidatorRegistry:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Quality\Validator\QuantityCheckValidator:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Quality\Validator\VisualCheckValidator:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Scheduling\TaskPriorityCalculatorService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Scheduling\WorkerAssignmentService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Count\CountPlanGeneratorService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Quality\QualityFailureHandlerService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\Quality\Validator\GenericCheckValidator:
+    public: true
+
+  # PathOptimization 服务配置
+  Tourze\WarehouseOperationBundle\Service\PathOptimizationService:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\InboundProcess:
+    public: true
+
+  Tourze\WarehouseOperationBundle\Service\InventoryCountService:
+    public: true
+
+  # AdminMenu 服务配置
+  Tourze\WarehouseOperationBundle\Service\AdminMenu:
+    public: true
+
+  # Form 类型服务配置
+  Tourze\WarehouseOperationBundle\Form\:
+    resource: '../../Form/'
+    tags: ['form.type']
+
+  # EasyAdmin Bundle 接口别名配置
+  EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface:
+    alias: EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator
