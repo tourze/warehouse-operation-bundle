@@ -35,7 +35,7 @@
     "tourze/easy-admin-enum-field-bundle": "1.0.*",
     "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/enum-extra": "1.*",
-    "tourze/product-service-contracts": "0.0.*",
+    "tourze/product-service-contracts": "1.0.*",
     "tourze/stock-manage-bundle": "0.0.*",
     "tourze/symfony-dependency-service-loader": "1.*",
     "tourze/symfony-routing-auto-loader-bundle": "1.0.*"
