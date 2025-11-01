@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Tests\Controller;
+namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
-use Tourze\WarehouseOperationBundle\Controller\ShelfCrudController;
+use Tourze\WarehouseOperationBundle\Controller\Admin\ShelfCrudController;
 use Tourze\WarehouseOperationBundle\Entity\Shelf;
 
 /**
@@ -62,8 +62,7 @@ final class ShelfCrudControllerTest extends AbstractEasyAdminControllerTestCase
     #[Test]
     public function testAdminUserCanAccessShelfIndex(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('index');
         $crawler = $client->request('GET', $url);
@@ -150,8 +149,7 @@ final class ShelfCrudControllerTest extends AbstractEasyAdminControllerTestCase
     #[Test]
     public function testValidationRules(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 创建测试实体来验证验证规则
         $shelf = new Shelf();
@@ -179,8 +177,7 @@ final class ShelfCrudControllerTest extends AbstractEasyAdminControllerTestCase
     #[Test]
     public function testCreateShelfPage(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('new');
         $crawler = $client->request('GET', $url);

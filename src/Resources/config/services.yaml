@@ -7,14 +7,11 @@ services:
 
   Tourze\WarehouseOperationBundle\Service\:
     resource: '../../Service/'
-
   Tourze\WarehouseOperationBundle\Repository\:
     resource: '../../Repository/'
     tags: ['doctrine.repository_service']
-
   Tourze\WarehouseOperationBundle\Controller\:
     resource: '../../Controller/'
-    tags: ['controller.service_arguments']
 
 #  Tourze\WarehouseOperationBundle\EventSubscriber\:
 #    resource: '../../EventSubscriber/'

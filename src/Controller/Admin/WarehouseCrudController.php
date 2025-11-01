@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Controller;
+namespace Tourze\WarehouseOperationBundle\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -12,32 +12,32 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Tourze\WarehouseOperationBundle\Entity\Shelf;
+use Tourze\WarehouseOperationBundle\Entity\Warehouse;
 
 /**
- * @template TEntity of Shelf
+ * @template TEntity of Warehouse
  * @extends AbstractCrudController<TEntity>
  */
-#[AdminCrud(routePath: '/warehouse-operation/shelf', routeName: 'warehouse_operation_shelf')]
-final class ShelfCrudController extends AbstractCrudController
+#[AdminCrud(routePath: '/warehouse-operation/warehouse', routeName: 'warehouse_operation_warehouse')]
+final class WarehouseCrudController extends AbstractCrudController
 {
     /**
-     * @return class-string<Shelf>
+     * @return class-string<Warehouse>
      */
     public static function getEntityFqcn(): string
     {
-        return Shelf::class;
+        return Warehouse::class;
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('货架')
-            ->setEntityLabelInPlural('货架')
-            ->setPageTitle('index', '货架列表')
-            ->setPageTitle('detail', '货架详情')
-            ->setPageTitle('edit', '编辑货架')
-            ->setPageTitle('new', '新建货架')
+            ->setEntityLabelInSingular('仓库')
+            ->setEntityLabelInPlural('仓库')
+            ->setPageTitle('index', '仓库列表')
+            ->setPageTitle('detail', '仓库详情')
+            ->setPageTitle('edit', '编辑仓库')
+            ->setPageTitle('new', '新建仓库')
         ;
     }
 
@@ -47,16 +47,24 @@ final class ShelfCrudController extends AbstractCrudController
             ->hideOnForm()
         ;
 
-        yield AssociationField::new('zone', '库区')
-            ->setHelp('所属库区，可选')
+        yield TextField::new('code', '代号')
+            ->setHelp('仓库代号，必填，最多64个字符，必须唯一')
         ;
 
-        yield TextField::new('title', '货架名称')
-            ->setHelp('货架名称，必填，最多100个字符')
+        yield TextField::new('name', '名称')
+            ->setHelp('仓库名称，必填，最多100个字符')
         ;
 
-        yield AssociationField::new('locations', '存储位置')
-            ->setHelp('货架下的存储位置列表')
+        yield TextField::new('contactName', '联系人')
+            ->setHelp('联系人姓名，可选，最多60个字符')
+        ;
+
+        yield TextField::new('contactTel', '联系电话')
+            ->setHelp('联系电话，可选，最多120个字符')
+        ;
+
+        yield AssociationField::new('zones', '库区')
+            ->setHelp('仓库下的库区列表')
             ->hideOnIndex()
             ->hideOnForm()
         ;
@@ -83,8 +91,9 @@ final class ShelfCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('zone')
-            ->add('title')
+            ->add('code')
+            ->add('name')
+            ->add('contactName')
         ;
     }
 }

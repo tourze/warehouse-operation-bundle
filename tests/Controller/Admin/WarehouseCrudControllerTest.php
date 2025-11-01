@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Tests\Controller;
+namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
-use Tourze\WarehouseOperationBundle\Controller\WarehouseCrudController;
+use Tourze\WarehouseOperationBundle\Controller\Admin\WarehouseCrudController;
 use Tourze\WarehouseOperationBundle\Entity\Warehouse;
 
 /**
@@ -84,8 +84,7 @@ final class WarehouseCrudControllerTest extends AbstractEasyAdminControllerTestC
     #[Test]
     public function testValidationRules(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 创建测试实体来验证验证规则
         $warehouse = new Warehouse();

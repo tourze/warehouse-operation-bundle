@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Controller;
+namespace Tourze\WarehouseOperationBundle\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;

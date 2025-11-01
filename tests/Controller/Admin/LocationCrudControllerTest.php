@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Tests\Controller;
+namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -12,26 +12,26 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
-use Tourze\WarehouseOperationBundle\Controller\OutboundTaskCrudController;
-use Tourze\WarehouseOperationBundle\Entity\OutboundTask;
+use Tourze\WarehouseOperationBundle\Controller\Admin\LocationCrudController;
+use Tourze\WarehouseOperationBundle\Entity\Location;
 
 /**
- * 出库任务控制器测试
+ * 存储位置控制器测试
  *
- * 测试 OutboundTaskCrudController 的基本功能，确保控制器正确配置
+ * 测试 LocationCrudController 的基本功能，确保控制器正确配置
  * 并能够正常工作。
  * @internal
  */
-#[CoversClass(OutboundTaskCrudController::class)]
+#[CoversClass(LocationCrudController::class)]
 #[RunTestsInSeparateProcesses]
-final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTestCase
+final class LocationCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
     /**
-     * @return OutboundTaskCrudController<OutboundTask>
+     * @return LocationCrudController<Location>
      */
-    protected function getControllerService(): OutboundTaskCrudController
+    protected function getControllerService(): LocationCrudController
     {
-        return self::getService(OutboundTaskCrudController::class);
+        return self::getService(LocationCrudController::class);
     }
 
     /**
@@ -40,7 +40,7 @@ final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     #[Test]
     public function testControllerReturnsCorrectEntityFqcn(): void
     {
-        $this->assertSame(OutboundTask::class, OutboundTaskCrudController::getEntityFqcn());
+        $this->assertSame(Location::class, LocationCrudController::getEntityFqcn());
     }
 
     /**
@@ -57,20 +57,19 @@ final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     }
 
     /**
-     * 测试管理员用户可以成功访问出库任务列表
+     * 测试管理员用户可以成功访问存储位置列表
      */
     #[Test]
-    public function testAdminUserCanAccessOutboundTaskIndex(): void
+    public function testAdminUserCanAccessLocationIndex(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('index');
         $crawler = $client->request('GET', $url);
 
-        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access outbound task index');
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access location index');
         $content = $crawler->text();
-        $this->assertStringContainsString('出库任务', $content, 'Page should contain outbound task text');
+        $this->assertStringContainsString('存储位置', $content, 'Page should contain location text');
     }
 
     /**
@@ -102,7 +101,7 @@ final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTe
         $fields = iterator_to_array($controller->configureFields('index'));
 
         $this->assertNotEmpty($fields, 'Controller should configure fields');
-        $this->assertGreaterThan(5, count($fields), 'Controller should configure multiple fields');
+        $this->assertGreaterThan(3, count($fields), 'Controller should configure multiple fields');
 
         // 验证基本字段存在
         $fieldNames = array_map(
@@ -122,6 +121,8 @@ final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTe
         );
 
         $this->assertContainsEquals('id', $fieldNames, 'Should have id field');
+        $this->assertContainsEquals('shelf', $fieldNames, 'Should have shelf field');
+        $this->assertContainsEquals('title', $fieldNames, 'Should have title field');
     }
 
     /**
@@ -143,50 +144,55 @@ final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     }
 
     /**
-     * 测试验证规则
+     * 测试验证规则 - 存储位置必填字段
      */
     #[Test]
     public function testValidationRules(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 创建测试实体来验证验证规则
-        $outboundTask = new OutboundTask();
+        $location = new Location();
         $validator = self::getService('Symfony\Component\Validator\Validator\ValidatorInterface');
-        $violations = $validator->validate($outboundTask);
+        $violations = $validator->validate($location);
 
-        // 验证有验证规则（可能继承自父类）
-        $this->assertGreaterThanOrEqual(0, count($violations), 'Outbound task validation should work');
+        // 验证必填字段有验证错误
+        $this->assertGreaterThan(0, count($violations), 'Location should have validation errors');
+
+        // 检查是否有shelf字段的验证错误
+        $hasShelfError = false;
+        foreach ($violations as $violation) {
+            if ('shelf' === $violation->getPropertyPath()) {
+                $hasShelfError = true;
+                $this->assertNotEmpty($violation->getMessage(), 'Shelf field should have validation error message');
+                break;
+            }
+        }
+        $this->assertTrue($hasShelfError, 'Should have shelf field validation error');
     }
 
     /**
-     * 测试创建出库任务页面
+     * 测试创建存储位置页面
      */
     #[Test]
-    public function testCreateOutboundTaskPage(): void
+    public function testCreateLocationPage(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('new');
         $crawler = $client->request('GET', $url);
 
         $this->assertTrue($client->getResponse()->isSuccessful(), 'Should be able to access create page');
         $content = $crawler->text();
-        $this->assertStringContainsString('新建出库任务', $content, 'Create page should have correct title');
+        $this->assertStringContainsString('新建存储位置', $content, 'Create page should have correct title');
     }
 
     /** @return \Generator<string, array{string}> */
     public static function provideIndexPageHeaders(): \Generator
     {
         yield 'ID' => ['ID'];
-        yield '任务状态' => ['任务状态'];
-        yield '优先级' => ['优先级'];
-        yield '分配的作业员ID' => ['分配的作业员ID'];
-        yield '分配时间' => ['分配时间'];
-        yield '开始时间' => ['开始时间'];
-        yield '完成时间' => ['完成时间'];
+        yield '货架' => ['货架'];
+        yield '位置名称' => ['位置名称'];
         yield '创建时间' => ['创建时间'];
         yield '更新时间' => ['更新时间'];
     }
@@ -194,11 +200,8 @@ final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     /** @return \Generator<string, array{string}> */
     public static function provideNewPageFields(): \Generator
     {
-        yield 'status' => ['status'];
-        yield 'priority' => ['priority'];
-        // EasyAdmin 的 ArrayField 在某些主题下不会直接渲染标准表单输入，跳过 mandatory 检查
-        yield 'assignedWorker' => ['assignedWorker'];
-        yield 'notes' => ['notes'];
+        yield 'shelf' => ['shelf'];
+        yield 'title' => ['title'];
     }
 
     /** @return iterable<string, array{string}> */

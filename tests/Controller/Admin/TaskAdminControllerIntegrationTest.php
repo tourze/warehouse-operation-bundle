@@ -33,8 +33,7 @@ final class TaskAdminControllerIntegrationTest extends AbstractWebTestCase
 
     protected function onSetUp(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // @phpstan-ignore assign.propertyType
         $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);

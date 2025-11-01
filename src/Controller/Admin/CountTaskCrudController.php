@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Controller;
+namespace Tourze\WarehouseOperationBundle\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -12,36 +12,37 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Tourze\EasyAdminEnumFieldBundle\Field\EnumField;
-use Tourze\WarehouseOperationBundle\Entity\InboundTask;
+use Tourze\WarehouseOperationBundle\Entity\CountTask;
 use Tourze\WarehouseOperationBundle\Enum\TaskStatus;
 
 /**
- * @template TEntity of InboundTask
+ * @template TEntity of CountTask
  * @extends AbstractCrudController<TEntity>
  */
-#[AdminCrud(routePath: '/warehouse-operation/inbound-task', routeName: 'warehouse_operation_inbound_task')]
-final class InboundTaskCrudController extends AbstractCrudController
+#[AdminCrud(routePath: '/warehouse-operation/count-task', routeName: 'warehouse_operation_count_task')]
+final class CountTaskCrudController extends AbstractCrudController
 {
     /**
-     * @return class-string<InboundTask>
+     * @return class-string<CountTask>
      */
     public static function getEntityFqcn(): string
     {
-        return InboundTask::class;
+        return CountTask::class;
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('入库任务')
-            ->setEntityLabelInPlural('入库任务')
-            ->setPageTitle('index', '入库任务列表')
-            ->setPageTitle('detail', '入库任务详情')
-            ->setPageTitle('edit', '编辑入库任务')
-            ->setPageTitle('new', '新建入库任务')
+            ->setEntityLabelInSingular('盘点任务')
+            ->setEntityLabelInPlural('盘点任务')
+            ->setPageTitle('index', '盘点任务列表')
+            ->setPageTitle('detail', '盘点任务详情')
+            ->setPageTitle('edit', '编辑盘点任务')
+            ->setPageTitle('new', '新建盘点任务')
         ;
     }
 
@@ -53,14 +54,31 @@ final class InboundTaskCrudController extends AbstractCrudController
 
         $statusField = EnumField::new('status', '任务状态');
         $statusField->setEnumCases(TaskStatus::cases());
-        yield $statusField->setHelp('入库任务状态，默认为待分配');
+        yield $statusField->setHelp('盘点任务状态，默认为待分配');
 
         yield IntegerField::new('priority', '优先级')
             ->setHelp('任务优先级，范围1-100，默认为1')
         ;
 
+        yield IntegerField::new('countPlanId', '盘点计划ID')
+            ->setHelp('关联的盘点计划ID，可选')
+        ;
+
+        yield IntegerField::new('taskSequence', '任务序列')
+            ->setHelp('盘点任务序列号，可选')
+        ;
+
+        yield TextField::new('locationCode', '库位编码')
+            ->setHelp('盘点库位编码，可选，最多50个字符')
+        ;
+
+        yield NumberField::new('accuracy', '盘点准确率')
+            ->setHelp('盘点准确率(百分比)，范围0-100')
+            ->setNumDecimals(2)
+        ;
+
         yield ArrayField::new('data', '任务数据')
-            ->setHelp('入库任务相关的JSON数据')
+            ->setHelp('盘点任务相关的JSON数据')
             ->hideOnIndex()
         ;
 
@@ -112,6 +130,8 @@ final class InboundTaskCrudController extends AbstractCrudController
         return $filters
             ->add('status')
             ->add('priority')
+            ->add('countPlanId')
+            ->add('locationCode')
             ->add('assignedWorker')
         ;
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Tests\Controller;
+namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -12,26 +12,26 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
-use Tourze\WarehouseOperationBundle\Controller\TransferTaskCrudController;
-use Tourze\WarehouseOperationBundle\Entity\TransferTask;
+use Tourze\WarehouseOperationBundle\Controller\Admin\OutboundTaskCrudController;
+use Tourze\WarehouseOperationBundle\Entity\OutboundTask;
 
 /**
- * 调拨任务控制器测试
+ * 出库任务控制器测试
  *
- * 测试 TransferTaskCrudController 的基本功能，确保控制器正确配置
+ * 测试 OutboundTaskCrudController 的基本功能，确保控制器正确配置
  * 并能够正常工作。
  * @internal
  */
-#[CoversClass(TransferTaskCrudController::class)]
+#[CoversClass(OutboundTaskCrudController::class)]
 #[RunTestsInSeparateProcesses]
-final class TransferTaskCrudControllerTest extends AbstractEasyAdminControllerTestCase
+final class OutboundTaskCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
     /**
-     * @return TransferTaskCrudController<TransferTask>
+     * @return OutboundTaskCrudController<OutboundTask>
      */
-    protected function getControllerService(): TransferTaskCrudController
+    protected function getControllerService(): OutboundTaskCrudController
     {
-        return self::getService(TransferTaskCrudController::class);
+        return self::getService(OutboundTaskCrudController::class);
     }
 
     /**
@@ -40,7 +40,7 @@ final class TransferTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     #[Test]
     public function testControllerReturnsCorrectEntityFqcn(): void
     {
-        $this->assertSame(TransferTask::class, TransferTaskCrudController::getEntityFqcn());
+        $this->assertSame(OutboundTask::class, OutboundTaskCrudController::getEntityFqcn());
     }
 
     /**
@@ -57,20 +57,19 @@ final class TransferTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     }
 
     /**
-     * 测试管理员用户可以成功访问调拨任务列表
+     * 测试管理员用户可以成功访问出库任务列表
      */
     #[Test]
-    public function testAdminUserCanAccessTransferTaskIndex(): void
+    public function testAdminUserCanAccessOutboundTaskIndex(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('index');
         $crawler = $client->request('GET', $url);
 
-        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access transfer task index');
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access outbound task index');
         $content = $crawler->text();
-        $this->assertStringContainsString('转移任务', $content, 'Page should contain transfer task text');
+        $this->assertStringContainsString('出库任务', $content, 'Page should contain outbound task text');
     }
 
     /**
@@ -148,33 +147,31 @@ final class TransferTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     #[Test]
     public function testValidationRules(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 创建测试实体来验证验证规则
-        $transferTask = new TransferTask();
+        $outboundTask = new OutboundTask();
         $validator = self::getService('Symfony\Component\Validator\Validator\ValidatorInterface');
-        $violations = $validator->validate($transferTask);
+        $violations = $validator->validate($outboundTask);
 
         // 验证有验证规则（可能继承自父类）
-        $this->assertGreaterThanOrEqual(0, count($violations), 'Transfer task validation should work');
+        $this->assertGreaterThanOrEqual(0, count($violations), 'Outbound task validation should work');
     }
 
     /**
-     * 测试创建调拨任务页面
+     * 测试创建出库任务页面
      */
     #[Test]
-    public function testCreateTransferTaskPage(): void
+    public function testCreateOutboundTaskPage(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('new');
         $crawler = $client->request('GET', $url);
 
         $this->assertTrue($client->getResponse()->isSuccessful(), 'Should be able to access create page');
         $content = $crawler->text();
-        $this->assertStringContainsString('新建转移任务', $content, 'Create page should have correct title');
+        $this->assertStringContainsString('新建出库任务', $content, 'Create page should have correct title');
     }
 
     /** @return \Generator<string, array{string}> */
@@ -196,6 +193,7 @@ final class TransferTaskCrudControllerTest extends AbstractEasyAdminControllerTe
     {
         yield 'status' => ['status'];
         yield 'priority' => ['priority'];
+        // EasyAdmin 的 ArrayField 在某些主题下不会直接渲染标准表单输入，跳过 mandatory 检查
         yield 'assignedWorker' => ['assignedWorker'];
         yield 'notes' => ['notes'];
     }

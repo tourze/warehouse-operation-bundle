@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Tests\Controller;
+namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -12,26 +12,26 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
-use Tourze\WarehouseOperationBundle\Controller\CountTaskCrudController;
-use Tourze\WarehouseOperationBundle\Entity\CountTask;
+use Tourze\WarehouseOperationBundle\Controller\Admin\TaskRuleCrudController;
+use Tourze\WarehouseOperationBundle\Entity\TaskRule;
 
 /**
- * 盘点任务控制器测试
+ * 任务规则控制器测试
  *
- * 测试 CountTaskCrudController 的基本功能，确保控制器正确配置
+ * 测试 TaskRuleCrudController 的基本功能，确保控制器正确配置
  * 并能够正常工作。
  * @internal
  */
-#[CoversClass(CountTaskCrudController::class)]
+#[CoversClass(TaskRuleCrudController::class)]
 #[RunTestsInSeparateProcesses]
-final class CountTaskCrudControllerTest extends AbstractEasyAdminControllerTestCase
+final class TaskRuleCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
     /**
-     * @return CountTaskCrudController<CountTask>
+     * @return TaskRuleCrudController<TaskRule>
      */
-    protected function getControllerService(): CountTaskCrudController
+    protected function getControllerService(): TaskRuleCrudController
     {
-        return self::getService(CountTaskCrudController::class);
+        return self::getService(TaskRuleCrudController::class);
     }
 
     /**
@@ -40,7 +40,7 @@ final class CountTaskCrudControllerTest extends AbstractEasyAdminControllerTestC
     #[Test]
     public function testControllerReturnsCorrectEntityFqcn(): void
     {
-        $this->assertSame(CountTask::class, CountTaskCrudController::getEntityFqcn());
+        $this->assertSame(TaskRule::class, TaskRuleCrudController::getEntityFqcn());
     }
 
     /**
@@ -57,20 +57,19 @@ final class CountTaskCrudControllerTest extends AbstractEasyAdminControllerTestC
     }
 
     /**
-     * 测试管理员用户可以成功访问盘点任务列表
+     * 测试管理员用户可以成功访问任务规则列表
      */
     #[Test]
-    public function testAdminUserCanAccessCountTaskIndex(): void
+    public function testAdminUserCanAccessTaskRuleIndex(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('index');
         $crawler = $client->request('GET', $url);
 
-        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access count task index');
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access task rule index');
         $content = $crawler->text();
-        $this->assertStringContainsString('盘点任务', $content, 'Page should contain count task text');
+        $this->assertStringContainsString('任务规则', $content, 'Page should contain task rule text');
     }
 
     /**
@@ -122,8 +121,10 @@ final class CountTaskCrudControllerTest extends AbstractEasyAdminControllerTestC
         );
 
         $this->assertContainsEquals('id', $fieldNames, 'Should have id field');
-        $this->assertContainsEquals('countPlanId', $fieldNames, 'Should have countPlanId field');
-        $this->assertContainsEquals('taskSequence', $fieldNames, 'Should have taskSequence field');
+        $this->assertContainsEquals('name', $fieldNames, 'Should have name field');
+        $this->assertContainsEquals('ruleType', $fieldNames, 'Should have ruleType field');
+        $this->assertContainsEquals('priority', $fieldNames, 'Should have priority field');
+        $this->assertContainsEquals('isActive', $fieldNames, 'Should have isActive field');
     }
 
     /**
@@ -145,54 +146,59 @@ final class CountTaskCrudControllerTest extends AbstractEasyAdminControllerTestC
     }
 
     /**
-     * 测试验证规则 - 盘点任务ID验证
+     * 测试验证规则 - 任务规则必填字段
      */
     #[Test]
     public function testValidationRules(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 创建测试实体来验证验证规则
-        $countTask = new CountTask();
+        $taskRule = new TaskRule();
         $validator = self::getService('Symfony\Component\Validator\Validator\ValidatorInterface');
-        $violations = $validator->validate($countTask);
+        $violations = $validator->validate($taskRule);
 
-        // 验证有验证错误（可能继承自父类的验证规则）
-        $this->assertGreaterThanOrEqual(0, count($violations), 'Count task validation should work');
+        // 验证必填字段有验证错误
+        $this->assertGreaterThan(0, count($violations), 'Task rule should have validation errors');
+
+        // 检查是否有name字段的验证错误
+        $hasNameError = false;
+        foreach ($violations as $violation) {
+            if ('name' === $violation->getPropertyPath()) {
+                $hasNameError = true;
+                $this->assertNotEmpty($violation->getMessage(), 'Name field should have validation error message');
+                break;
+            }
+        }
+        $this->assertTrue($hasNameError, 'Should have name field validation error');
     }
 
     /**
-     * 测试创建盘点任务页面
+     * 测试创建任务规则页面
      */
     #[Test]
-    public function testCreateCountTaskPage(): void
+    public function testCreateTaskRulePage(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('new');
         $crawler = $client->request('GET', $url);
 
         $this->assertTrue($client->getResponse()->isSuccessful(), 'Should be able to access create page');
         $content = $crawler->text();
-        $this->assertStringContainsString('新建盘点任务', $content, 'Create page should have correct title');
+        $this->assertStringContainsString('新建任务规则', $content, 'Create page should have correct title');
     }
 
     /** @return \Generator<string, array{string}> */
     public static function provideIndexPageHeaders(): \Generator
     {
         yield 'ID' => ['ID'];
-        yield '任务状态' => ['任务状态'];
-        yield '优先级' => ['优先级'];
-        yield '盘点计划ID' => ['盘点计划ID'];
-        yield '任务序列' => ['任务序列'];
-        yield '库位编码' => ['库位编码'];
-        yield '盘点准确率' => ['盘点准确率'];
-        yield '分配的作业员ID' => ['分配的作业员ID'];
-        yield '分配时间' => ['分配时间'];
-        yield '开始时间' => ['开始时间'];
-        yield '完成时间' => ['完成时间'];
+        yield '规则名称' => ['规则名称'];
+        yield '规则类型' => ['规则类型'];
+        yield '规则优先级' => ['规则优先级'];
+        yield '是否启用' => ['是否启用'];
+        yield '生效开始日期' => ['生效开始日期'];
+        yield '生效结束日期' => ['生效结束日期'];
         yield '创建时间' => ['创建时间'];
         yield '更新时间' => ['更新时间'];
     }
@@ -200,19 +206,17 @@ final class CountTaskCrudControllerTest extends AbstractEasyAdminControllerTestC
     /** @return \Generator<string, array{string}> */
     public static function provideNewPageFields(): \Generator
     {
-        yield 'status' => ['status'];
+        yield 'name' => ['name'];
+        yield 'ruleType' => ['ruleType'];
+        yield 'description' => ['description'];
         yield 'priority' => ['priority'];
-        yield 'countPlanId' => ['countPlanId'];
-        yield 'taskSequence' => ['taskSequence'];
-        yield 'locationCode' => ['locationCode'];
-        yield 'accuracy' => ['accuracy'];
-        yield 'assignedWorker' => ['assignedWorker'];
+        yield 'isActive' => ['isActive'];
+        yield 'effectiveFrom' => ['effectiveFrom'];
+        yield 'effectiveTo' => ['effectiveTo'];
         yield 'notes' => ['notes'];
     }
 
-    /**
-     * @return iterable<string, array{string}>
-     */
+    /** @return iterable<string, array{string}> */
     public static function provideEditPageFields(): iterable
     {
         return self::provideNewPageFields();

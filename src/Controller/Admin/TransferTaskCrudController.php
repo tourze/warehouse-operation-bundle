@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Controller;
+namespace Tourze\WarehouseOperationBundle\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -15,33 +15,33 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Tourze\EasyAdminEnumFieldBundle\Field\EnumField;
-use Tourze\WarehouseOperationBundle\Entity\QualityTask;
+use Tourze\WarehouseOperationBundle\Entity\TransferTask;
 use Tourze\WarehouseOperationBundle\Enum\TaskStatus;
 
 /**
- * @template TEntity of QualityTask
+ * @template TEntity of TransferTask
  * @extends AbstractCrudController<TEntity>
  */
-#[AdminCrud(routePath: '/warehouse-operation/quality-task', routeName: 'warehouse_operation_quality_task')]
-final class QualityTaskCrudController extends AbstractCrudController
+#[AdminCrud(routePath: '/warehouse-operation/transfer-task', routeName: 'warehouse_operation_transfer_task')]
+final class TransferTaskCrudController extends AbstractCrudController
 {
     /**
-     * @return class-string<QualityTask>
+     * @return class-string<TransferTask>
      */
     public static function getEntityFqcn(): string
     {
-        return QualityTask::class;
+        return TransferTask::class;
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('质量任务')
-            ->setEntityLabelInPlural('质量任务')
-            ->setPageTitle('index', '质量任务列表')
-            ->setPageTitle('detail', '质量任务详情')
-            ->setPageTitle('edit', '编辑质量任务')
-            ->setPageTitle('new', '新建质量任务')
+            ->setEntityLabelInSingular('转移任务')
+            ->setEntityLabelInPlural('转移任务')
+            ->setPageTitle('index', '转移任务列表')
+            ->setPageTitle('detail', '转移任务详情')
+            ->setPageTitle('edit', '编辑转移任务')
+            ->setPageTitle('new', '新建转移任务')
         ;
     }
 
@@ -53,14 +53,14 @@ final class QualityTaskCrudController extends AbstractCrudController
 
         $statusField = EnumField::new('status', '任务状态');
         $statusField->setEnumCases(TaskStatus::cases());
-        yield $statusField->setHelp('质量任务状态，默认为待分配');
+        yield $statusField->setHelp('转移任务状态，默认为待分配');
 
         yield IntegerField::new('priority', '优先级')
             ->setHelp('任务优先级，范围1-100，默认为1')
         ;
 
         yield ArrayField::new('data', '任务数据')
-            ->setHelp('质量任务相关的JSON数据')
+            ->setHelp('转移任务相关的JSON数据')
             ->hideOnIndex()
         ;
 

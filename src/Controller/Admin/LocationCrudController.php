@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Controller;
+namespace Tourze\WarehouseOperationBundle\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -11,34 +11,33 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Tourze\WarehouseOperationBundle\Entity\Zone;
+use Tourze\WarehouseOperationBundle\Entity\Location;
 
 /**
- * @template TEntity of Zone
+ * @template TEntity of Location
  * @extends AbstractCrudController<TEntity>
  */
-#[AdminCrud(routePath: '/warehouse-operation/zone', routeName: 'warehouse_operation_zone')]
-final class ZoneCrudController extends AbstractCrudController
+#[AdminCrud(routePath: '/warehouse-operation/location', routeName: 'warehouse_operation_location')]
+final class LocationCrudController extends AbstractCrudController
 {
     /**
-     * @return class-string<Zone>
+     * @return class-string<Location>
      */
     public static function getEntityFqcn(): string
     {
-        return Zone::class;
+        return Location::class;
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('库区')
-            ->setEntityLabelInPlural('库区')
-            ->setPageTitle('index', '库区列表')
-            ->setPageTitle('detail', '库区详情')
-            ->setPageTitle('edit', '编辑库区')
-            ->setPageTitle('new', '新建库区')
+            ->setEntityLabelInSingular('存储位置')
+            ->setEntityLabelInPlural('存储位置')
+            ->setPageTitle('index', '存储位置列表')
+            ->setPageTitle('detail', '存储位置详情')
+            ->setPageTitle('edit', '编辑存储位置')
+            ->setPageTitle('new', '新建存储位置')
         ;
     }
 
@@ -48,26 +47,12 @@ final class ZoneCrudController extends AbstractCrudController
             ->hideOnForm()
         ;
 
-        yield AssociationField::new('warehouse', '仓库')
-            ->setHelp('所属仓库，必填')
+        yield AssociationField::new('shelf', '货架')
+            ->setHelp('所属货架，必填')
         ;
 
-        yield TextField::new('title', '库区名称')
-            ->setHelp('库区名称，必填，最多60个字符')
-        ;
-
-        yield NumberField::new('acreage', '面积')
-            ->setHelp('库区面积，可选，精确到小数点后2位')
-        ;
-
-        yield TextField::new('type', '类型')
-            ->setHelp('库区类型，必填，最多60个字符')
-        ;
-
-        yield AssociationField::new('shelves', '货架')
-            ->setHelp('库区下的货架列表')
-            ->hideOnIndex()
-            ->hideOnForm()
+        yield TextField::new('title', '位置名称')
+            ->setHelp('存储位置名称，可选，最多100个字符')
         ;
 
         yield DateTimeField::new('createTime', '创建时间')
@@ -92,9 +77,8 @@ final class ZoneCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('warehouse')
+            ->add('shelf')
             ->add('title')
-            ->add('type')
         ;
     }
 }

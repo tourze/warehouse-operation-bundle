@@ -25,8 +25,7 @@ final class CountPlanAdminControllerTest extends AbstractWebTestCase
 {
     public function testControllerExists(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 测试控制器类可实例化
         $controller = new CountPlanAdminController();
@@ -83,8 +82,7 @@ final class CountPlanAdminControllerTest extends AbstractWebTestCase
         }
 
         // 测试访问非法HTTP方法的处理
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $client->request($method, '/admin/count-plan/1');
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tourze\WarehouseOperationBundle\Tests\Controller;
+namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -12,26 +12,27 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
-use Tourze\WarehouseOperationBundle\Controller\InboundTaskCrudController;
-use Tourze\WarehouseOperationBundle\Entity\InboundTask;
+use Tourze\WarehouseOperationBundle\Controller\Admin\QualityTaskCrudController;
+use Tourze\WarehouseOperationBundle\Entity\QualityTask;
+use Tourze\WarehouseOperationBundle\Enum\TaskType;
 
 /**
- * 入库任务控制器测试
+ * 质检任务控制器测试
  *
- * 测试 InboundTaskCrudController 的基本功能，确保控制器正确配置
+ * 测试 QualityTaskCrudController 的基本功能，确保控制器正确配置
  * 并能够正常工作。
  * @internal
  */
-#[CoversClass(InboundTaskCrudController::class)]
+#[CoversClass(QualityTaskCrudController::class)]
 #[RunTestsInSeparateProcesses]
-final class InboundTaskCrudControllerTest extends AbstractEasyAdminControllerTestCase
+final class QualityTaskCrudControllerTest extends AbstractEasyAdminControllerTestCase
 {
     /**
-     * @return InboundTaskCrudController<InboundTask>
+     * @return QualityTaskCrudController<QualityTask>
      */
-    protected function getControllerService(): InboundTaskCrudController
+    protected function getControllerService(): QualityTaskCrudController
     {
-        return self::getService(InboundTaskCrudController::class);
+        return self::getService(QualityTaskCrudController::class);
     }
 
     /**
@@ -40,7 +41,7 @@ final class InboundTaskCrudControllerTest extends AbstractEasyAdminControllerTes
     #[Test]
     public function testControllerReturnsCorrectEntityFqcn(): void
     {
-        $this->assertSame(InboundTask::class, InboundTaskCrudController::getEntityFqcn());
+        $this->assertSame(QualityTask::class, QualityTaskCrudController::getEntityFqcn());
     }
 
     /**
@@ -57,20 +58,19 @@ final class InboundTaskCrudControllerTest extends AbstractEasyAdminControllerTes
     }
 
     /**
-     * 测试管理员用户可以成功访问入库任务列表
+     * 测试管理员用户可以成功访问质检任务列表
      */
     #[Test]
-    public function testAdminUserCanAccessInboundTaskIndex(): void
+    public function testAdminUserCanAccessQualityTaskIndex(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('index');
         $crawler = $client->request('GET', $url);
 
-        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access inbound task index');
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'Admin should be able to access quality task index');
         $content = $crawler->text();
-        $this->assertStringContainsString('入库任务', $content, 'Page should contain inbound task text');
+        $this->assertStringContainsString('质量任务', $content, 'Page should contain quality task text');
     }
 
     /**
@@ -143,38 +143,53 @@ final class InboundTaskCrudControllerTest extends AbstractEasyAdminControllerTes
     }
 
     /**
+     * 测试质检任务实体特性
+     */
+    #[Test]
+    public function testQualityTaskEntity(): void
+    {
+        $qualityTask = new QualityTask();
+
+        // 验证任务类型正确设置
+        $this->assertEquals(TaskType::QUALITY, $qualityTask->getType());
+
+        // 测试设置任务名称的便利方法
+        $qualityTask->setTaskName('Test Quality Task');
+        $data = $qualityTask->getData();
+        $this->assertEquals('Test Quality Task', $data['task_name']);
+    }
+
+    /**
      * 测试验证规则
      */
     #[Test]
     public function testValidationRules(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 创建测试实体来验证验证规则
-        $inboundTask = new InboundTask();
+        $qualityTask = new QualityTask();
         $validator = self::getService('Symfony\Component\Validator\Validator\ValidatorInterface');
-        $violations = $validator->validate($inboundTask);
+        $violations = $validator->validate($qualityTask);
 
         // 验证有验证规则（可能继承自父类）
-        $this->assertGreaterThanOrEqual(0, count($violations), 'Inbound task validation should work');
+        $this->assertGreaterThanOrEqual(0, count($violations), 'Quality task validation should work');
     }
 
     /**
-     * 测试创建入库任务页面
+     * 测试创建质检任务页面
      */
     #[Test]
-    public function testCreateInboundTaskPage(): void
+    public function testCreateQualityTaskPage(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $url = $this->generateAdminUrl('new');
         $crawler = $client->request('GET', $url);
 
         $this->assertTrue($client->getResponse()->isSuccessful(), 'Should be able to access create page');
         $content = $crawler->text();
-        $this->assertStringContainsString('新建入库任务', $content, 'Create page should have correct title');
+        $this->assertStringContainsString('新建质量任务', $content, 'Create page should have correct title');
     }
 
     /** @return \Generator<string, array{string}> */

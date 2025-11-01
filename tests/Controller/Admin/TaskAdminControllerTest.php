@@ -32,8 +32,7 @@ final class TaskAdminControllerTest extends AbstractWebTestCase
 
     public function testControllerExists(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         // 测试控制器类可实例化
         $controller = new TaskAdminController();
