@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
+use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\WorkerSkillAdminController;
 
 /**
@@ -21,8 +21,23 @@ use Tourze\WarehouseOperationBundle\Controller\Admin\WorkerSkillAdminController;
  */
 #[CoversClass(WorkerSkillAdminController::class)]
 #[RunTestsInSeparateProcesses]
-final class WorkerSkillAdminControllerTest extends AbstractWebTestCase
+final class WorkerSkillAdminControllerTest extends AbstractEasyAdminControllerTestCase
 {
+    /**
+     * @return WorkerSkillAdminController
+     */
+    protected function getControllerService(): WorkerSkillAdminController
+    {
+        return self::getService(WorkerSkillAdminController::class);
+    }
+
+    public static function provideIndexPageHeaders(): \Generator
+    {
+        yield ['作业员技能管理'];
+        yield ['Worker Skill'];
+        yield ['编辑'];
+    }
+
     public function testControllerExists(): void
     {
         $client = self::createAuthenticatedClient();
@@ -237,7 +252,7 @@ final class WorkerSkillAdminControllerTest extends AbstractWebTestCase
     }
 
     #[DataProvider('provideNotAllowedMethods')]
-    public function testMethodNotAllowed(string $method): void
+    public function testCustomMethodNotAllowed(string $method): void
     {
         // 对于INVALID方法，我们期望异常
         if ('INVALID' === $method) {

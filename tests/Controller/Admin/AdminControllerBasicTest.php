@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\HttpFoundation\Response;
-use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
+use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\CountPlanAdminController;
 use Tourze\WarehouseOperationBundle\Controller\Admin\QualityStandardAdminController;
 use Tourze\WarehouseOperationBundle\Controller\Admin\TaskAdminController;
@@ -28,10 +28,25 @@ use Tourze\WarehouseOperationBundle\Entity\WorkerSkill;
  * 字段配置和自定义操作的基本功能验证。
  * @internal
  */
-#[CoversClass(AdminControllerBasicTest::class)]
+#[CoversClass(TaskAdminController::class)]
 #[RunTestsInSeparateProcesses]
-final class AdminControllerBasicTest extends AbstractWebTestCase
+final class AdminControllerBasicTest extends AbstractEasyAdminControllerTestCase
 {
+    protected function getControllerService(): TaskAdminController
+    {
+        return self::getService(TaskAdminController::class);
+    }
+
+    public static function provideIndexPageHeaders(): \Generator
+    {
+        yield ['ID'];
+        yield ['任务类型'];
+        yield ['任务状态'];
+        yield ['优先级'];
+        yield ['任务描述'];
+        yield ['作业位置'];
+    }
+
     public function __invoke(): void
     {
         // 执行所有基础控制器测试
@@ -267,7 +282,7 @@ final class AdminControllerBasicTest extends AbstractWebTestCase
      */
     #[Test]
     #[DataProvider('provideNotAllowedMethods')]
-    public function testMethodNotAllowed(string $method = 'GET'): void
+    public function testCustomMethodNotAllowed(string $method = 'GET'): void
     {
         // 测试基础控制器的架构一致性
         $controllers = [

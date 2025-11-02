@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
+use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\TaskAdminController;
 use Tourze\WarehouseOperationBundle\Entity\InboundTask;
 use Tourze\WarehouseOperationBundle\Entity\WarehouseTask;
@@ -23,8 +23,23 @@ use Tourze\WarehouseOperationBundle\Enum\TaskType;
  */
 #[CoversClass(TaskAdminController::class)]
 #[RunTestsInSeparateProcesses]
-final class TaskAdminControllerIntegrationTest extends AbstractWebTestCase
+final class TaskAdminControllerIntegrationTest extends AbstractEasyAdminControllerTestCase
 {
+    protected function getControllerService(): TaskAdminController
+    {
+        return self::getService(TaskAdminController::class);
+    }
+
+    public static function provideIndexPageHeaders(): \Generator
+    {
+        yield ['ID'];
+        yield ['任务类型'];
+        yield ['任务状态'];
+        yield ['优先级'];
+        yield ['任务描述'];
+        yield ['作业位置'];
+    }
+
     private EntityManagerInterface $entityManager;
     /**
      * @var TaskAdminController<WarehouseTask>
@@ -141,7 +156,7 @@ final class TaskAdminControllerIntegrationTest extends AbstractWebTestCase
      * 此测试类直接调用控制器方法，不通过路由访问，因此不测试 HTTP 方法限制
      */
     #[DataProvider('provideNotAllowedMethods')]
-    public function testMethodNotAllowed(string $method): void
+    public function testCustomMethodNotAllowed(string $method): void
     {
         if ('INVALID' === $method) {
             $this->assertSame('INVALID', $method, 'This is an integration test calling controller methods directly');
@@ -169,6 +184,27 @@ final class TaskAdminControllerIntegrationTest extends AbstractWebTestCase
         $this->entityManager->flush();
 
         return $task;
+    }
+
+    /** @return \Generator<string, array{string}> */
+    public static function provideNewPageFields(): \Generator
+    {
+        yield 'status' => ['status'];
+        yield 'priority' => ['priority'];
+        yield 'description' => ['description'];
+        yield 'location' => ['location'];
+        yield 'assignedWorker' => ['assignedWorker'];
+        yield 'taskData' => ['taskData'];
+        yield 'isEmergency' => ['isEmergency'];
+        yield 'dueDate' => ['dueDate'];
+        yield 'estimatedStartTime' => ['estimatedStartTime'];
+        yield 'estimatedEndTime' => ['estimatedEndTime'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideEditPageFields(): iterable
+    {
+        return self::provideNewPageFields();
     }
 
     }

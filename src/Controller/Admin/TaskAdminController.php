@@ -231,8 +231,6 @@ final class TaskAdminController extends AbstractCrudController
             ->add(Crud::PAGE_DETAIL, $changePriorityAction)
             ->add(Crud::PAGE_DETAIL, $pauseAction)
             ->add(Crud::PAGE_DETAIL, $resumeAction)
-            ->add(Crud::PAGE_INDEX, Action::NEW)
-            ->add(Crud::PAGE_INDEX, Action::EDIT)
             ->set(Crud::PAGE_INDEX, Action::DELETE)
             ->update(
                 Crud::PAGE_INDEX,

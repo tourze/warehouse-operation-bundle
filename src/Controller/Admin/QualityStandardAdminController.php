@@ -176,8 +176,6 @@ final class QualityStandardAdminController extends AbstractCrudController
             ->add(Crud::PAGE_DETAIL, $activateAction)
             ->add(Crud::PAGE_DETAIL, $deactivateAction)
             ->add(Crud::PAGE_DETAIL, $duplicateAction)
-            ->add(Crud::PAGE_INDEX, Action::NEW)
-            ->add(Crud::PAGE_INDEX, Action::EDIT)
             ->set(Crud::PAGE_INDEX, Action::DELETE)
             ->update(
                 Crud::PAGE_INDEX,

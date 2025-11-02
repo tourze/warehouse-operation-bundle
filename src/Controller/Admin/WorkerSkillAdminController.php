@@ -209,8 +209,6 @@ final class WorkerSkillAdminController extends AbstractCrudController
             ->add(Crud::PAGE_DETAIL, $revokeCertificationAction)
             ->add(Crud::PAGE_DETAIL, $upgradeSkillAction)
             ->add(Crud::PAGE_DETAIL, $viewPerformanceAction)
-            ->add(Crud::PAGE_INDEX, Action::NEW)
-            ->add(Crud::PAGE_INDEX, Action::EDIT)
             ->update(
                 Crud::PAGE_INDEX,
                 Action::NEW,

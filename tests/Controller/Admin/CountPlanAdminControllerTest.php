@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
+use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\CountPlanAdminController;
 
 /**
@@ -21,8 +21,27 @@ use Tourze\WarehouseOperationBundle\Controller\Admin\CountPlanAdminController;
  */
 #[CoversClass(CountPlanAdminController::class)]
 #[RunTestsInSeparateProcesses]
-final class CountPlanAdminControllerTest extends AbstractWebTestCase
+final class CountPlanAdminControllerTest extends AbstractEasyAdminControllerTestCase
 {
+    /**
+     * @return CountPlanAdminController
+     */
+    protected function getControllerService(): CountPlanAdminController
+    {
+        return self::getService(CountPlanAdminController::class);
+    }
+
+    public static function provideIndexPageHeaders(): \Generator
+    {
+        // 按照控制器 configureFields('index') 的字段顺序提供表头标签
+        yield 'ID' => ['ID'];
+        yield '计划名称' => ['计划名称'];
+        yield '盘点类型' => ['盘点类型'];
+        yield '优先级' => ['优先级'];
+        yield '启用状态' => ['启用状态'];
+        yield '开始日期' => ['开始日期'];
+    }
+
     public function testControllerExists(): void
     {
         $client = self::createAuthenticatedClient();
@@ -74,7 +93,7 @@ final class CountPlanAdminControllerTest extends AbstractWebTestCase
     }
 
     #[DataProvider('provideNotAllowedMethods')]
-    public function testMethodNotAllowed(string $method): void
+    public function testCustomMethodNotAllowed(string $method): void
     {
         // 对于INVALID方法，我们期望异常
         if ('INVALID' === $method) {
@@ -114,5 +133,26 @@ final class CountPlanAdminControllerTest extends AbstractWebTestCase
 
         // 验证过滤器配置不为空
         $this->assertNotNull($configuredFilters);
+    }
+
+    /** @return \Generator<string, array{string}> */
+    public static function provideNewPageFields(): \Generator
+    {
+        yield 'name' => ['name'];
+        yield 'countType' => ['countType'];
+        yield 'description' => ['description'];
+        yield 'scope' => ['scope'];
+        yield 'schedule' => ['schedule'];
+        yield 'priority' => ['priority'];
+        yield 'isActive' => ['isActive'];
+        yield 'autoExecute' => ['autoExecute'];
+        yield 'nextExecutionTime' => ['nextExecutionTime'];
+        yield 'estimatedDurationHours' => ['estimatedDurationHours'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideEditPageFields(): iterable
+    {
+        return self::provideNewPageFields();
     }
 }

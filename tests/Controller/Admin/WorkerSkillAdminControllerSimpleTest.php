@@ -7,7 +7,7 @@ namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
+use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\WorkerSkillAdminController;
 use Tourze\WarehouseOperationBundle\Entity\WorkerSkill;
 
@@ -19,8 +19,25 @@ use Tourze\WarehouseOperationBundle\Entity\WorkerSkill;
  */
 #[CoversClass(WorkerSkillAdminController::class)]
 #[RunTestsInSeparateProcesses]
-final class WorkerSkillAdminControllerSimpleTest extends AbstractWebTestCase
+final class WorkerSkillAdminControllerSimpleTest extends AbstractEasyAdminControllerTestCase
 {
+    protected function getControllerService(): WorkerSkillAdminController
+    {
+        return self::getService(WorkerSkillAdminController::class);
+    }
+
+    public static function provideIndexPageHeaders(): \Generator
+    {
+        yield ['ID'];
+        yield ['作业员ID'];
+        yield ['作业员姓名'];
+        yield ['技能类别'];
+        yield ['技能等级'];
+        yield ['技能分数'];
+        yield ['已认证'];
+        yield ['有效状态'];
+    }
+
     public function testGetEntityFqcn(): void
     {
         $entityFqcn = WorkerSkillAdminController::getEntityFqcn();
@@ -222,7 +239,7 @@ final class WorkerSkillAdminControllerSimpleTest extends AbstractWebTestCase
     }
 
     #[DataProvider('provideNotAllowedMethods')]
-    public function testMethodNotAllowed(string $method): void
+    public function testCustomMethodNotAllowed(string $method): void
     {
         // 实现父类要求的抽象方法
         $controller = new WorkerSkillAdminController();
@@ -231,5 +248,27 @@ final class WorkerSkillAdminControllerSimpleTest extends AbstractWebTestCase
         // 简单断言，验证方法参数
         $this->assertIsString($method);
         $this->assertNotEmpty($method);
+    }
+
+    /** @return \Generator<string, array{string}> */
+    public static function provideNewPageFields(): \Generator
+    {
+        yield 'workerId' => ['workerId'];
+        yield 'workerName' => ['workerName'];
+        yield 'skillCategory' => ['skillCategory'];
+        yield 'skillLevel' => ['skillLevel'];
+        yield 'skillScore' => ['skillScore'];
+        yield 'isCertified' => ['isCertified'];
+        yield 'isActive' => ['isActive'];
+        yield 'certifiedDate' => ['certifiedDate'];
+        yield 'expiryDate' => ['expiryDate'];
+        yield 'notes' => ['notes'];
+        yield 'experienceMonths' => ['experienceMonths'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideEditPageFields(): iterable
+    {
+        return self::provideNewPageFields();
     }
 }

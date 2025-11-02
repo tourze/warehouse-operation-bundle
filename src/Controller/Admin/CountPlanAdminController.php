@@ -52,7 +52,7 @@ final class CountPlanAdminController extends AbstractCrudController
             ->setPageTitle('detail', '盘点计划详情')
             ->setPageTitle('edit', '编辑盘点计划')
             ->setPageTitle('new', '创建盘点计划')
-            ->setDefaultSort(['isActive' => 'DESC', 'priority' => 'DESC', 'nextExecutionTime' => 'ASC'])
+            ->setDefaultSort(['isActive' => 'DESC', 'priority' => 'DESC', 'startDate' => 'ASC'])
             ->setPaginatorPageSize(20)
             ->setSearchFields(['name', 'countType', 'description'])
             ->showEntityActionsInlined()
@@ -140,7 +140,7 @@ final class CountPlanAdminController extends AbstractCrudController
             ->setHelp('是否按计划自动执行盘点任务')
         ;
 
-        yield DateTimeField::new('nextExecutionTime', '下次执行时间')
+        yield DateTimeField::new('startDate', '开始日期')
             ->setColumns('col-md-6')
             ->setRequired(false)
             ->setHelp('计划下次自动执行的时间')
@@ -259,7 +259,7 @@ final class CountPlanAdminController extends AbstractCrudController
             ->add(BooleanFilter::new('isActive', '启用状态'))
             ->add(BooleanFilter::new('autoExecute', '自动执行'))
             ->add('name')
-            ->add(DateTimeFilter::new('nextExecutionTime', '下次执行时间'))
+            ->add(DateTimeFilter::new('startDate', '开始日期'))
             ->add(DateTimeFilter::new('lastExecutionTime', '上次执行时间'))
             ->add(DateTimeFilter::new('createdAt', '创建时间'))
         ;

@@ -7,7 +7,7 @@ namespace Tourze\WarehouseOperationBundle\Tests\Controller\Admin;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
-use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
+use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\TaskAdminController;
 
 /**
@@ -19,8 +19,23 @@ use Tourze\WarehouseOperationBundle\Controller\Admin\TaskAdminController;
  */
 #[CoversClass(TaskAdminController::class)]
 #[RunTestsInSeparateProcesses]
-final class TaskAdminControllerTest extends AbstractWebTestCase
+final class TaskAdminControllerTest extends AbstractEasyAdminControllerTestCase
 {
+    /**
+     * @return TaskAdminController
+     */
+    protected function getControllerService(): TaskAdminController
+    {
+        return self::getService(TaskAdminController::class);
+    }
+
+    public static function provideIndexPageHeaders(): \Generator
+    {
+        yield ['任务管理'];
+        yield ['Task'];
+        yield ['编辑'];
+    }
+
     public function __invoke(): void
     {
         // 执行任务管理控制器测试
@@ -134,13 +149,34 @@ final class TaskAdminControllerTest extends AbstractWebTestCase
     }
 
     #[DataProvider('provideNotAllowedMethods')]
-    public function testMethodNotAllowed(string $method): void
+    public function testCustomMethodNotAllowed(string $method): void
     {
-        // 实现父类要求的抽象方法
+        // 测试自定义的HTTP方法处理
         $controller = new TaskAdminController();
         $this->assertInstanceOf(TaskAdminController::class, $controller);
 
         // 简单断言，验证方法参数
         $this->assertIsString($method);
+    }
+
+    /** @return \Generator<string, array{string}> */
+    public static function provideNewPageFields(): \Generator
+    {
+        yield 'status' => ['status'];
+        yield 'priority' => ['priority'];
+        yield 'description' => ['description'];
+        yield 'location' => ['location'];
+        yield 'assignedWorker' => ['assignedWorker'];
+        yield 'taskData' => ['taskData'];
+        yield 'isEmergency' => ['isEmergency'];
+        yield 'dueDate' => ['dueDate'];
+        yield 'estimatedStartTime' => ['estimatedStartTime'];
+        yield 'estimatedEndTime' => ['estimatedEndTime'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideEditPageFields(): iterable
+    {
+        return self::provideNewPageFields();
     }
 }

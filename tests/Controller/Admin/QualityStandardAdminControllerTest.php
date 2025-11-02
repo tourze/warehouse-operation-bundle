@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
+use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\QualityStandardAdminController;
 
 /**
@@ -21,8 +21,23 @@ use Tourze\WarehouseOperationBundle\Controller\Admin\QualityStandardAdminControl
  */
 #[CoversClass(QualityStandardAdminController::class)]
 #[RunTestsInSeparateProcesses]
-final class QualityStandardAdminControllerTest extends AbstractWebTestCase
+final class QualityStandardAdminControllerTest extends AbstractEasyAdminControllerTestCase
 {
+    /**
+     * @return QualityStandardAdminController
+     */
+    protected function getControllerService(): QualityStandardAdminController
+    {
+        return self::getService(QualityStandardAdminController::class);
+    }
+
+    public static function provideIndexPageHeaders(): \Generator
+    {
+        yield ['质量标准管理'];
+        yield ['Quality Standard'];
+        yield ['编辑'];
+    }
+
     public function testControllerExists(): void
     {
         $client = self::createAuthenticatedClient();
@@ -197,7 +212,7 @@ final class QualityStandardAdminControllerTest extends AbstractWebTestCase
     }
 
     #[DataProvider('provideNotAllowedMethods')]
-    public function testMethodNotAllowed(string $method): void
+    public function testCustomMethodNotAllowed(string $method): void
     {
         // 对于INVALID方法，我们期望异常
         if ('INVALID' === $method) {
@@ -214,5 +229,24 @@ final class QualityStandardAdminControllerTest extends AbstractWebTestCase
             // EasyAdmin 控制器应该返回正确的状态码或重定向
             self::assertContainsEquals($response->getStatusCode(), [405, 302, 404]);
         }
+    }
+
+    /** @return \Generator<string, array{string}> */
+    public static function provideNewPageFields(): \Generator
+    {
+        yield 'name' => ['name'];
+        yield 'productCategory' => ['productCategory'];
+        yield 'description' => ['description'];
+        yield 'checkItems' => ['checkItems'];
+        yield 'priority' => ['priority'];
+        yield 'isActive' => ['isActive'];
+        yield 'requireSampling' => ['requireSampling'];
+        yield 'samplingRate' => ['samplingRate'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideEditPageFields(): iterable
+    {
+        return self::provideNewPageFields();
     }
 }
