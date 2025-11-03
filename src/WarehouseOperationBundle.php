@@ -8,6 +8,7 @@ use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
 use Tourze\StockManageBundle\StockManageBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
 class WarehouseOperationBundle extends Bundle implements BundleDependencyInterface
 {
@@ -18,6 +19,7 @@ class WarehouseOperationBundle extends Bundle implements BundleDependencyInterfa
             TwigBundle::class => ['all' => true],
             EasyAdminBundle::class => ['all' => true],
             StockManageBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }
