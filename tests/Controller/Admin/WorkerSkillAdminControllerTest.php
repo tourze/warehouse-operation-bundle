@@ -38,6 +38,27 @@ final class WorkerSkillAdminControllerTest extends AbstractEasyAdminControllerTe
         yield ['编辑'];
     }
 
+    /** @return iterable<string, array{string}> */
+    public static function provideNewPageFields(): iterable
+    {
+        // WorkerSkillAdminController 字段
+        yield 'worker' => ['worker'];
+        yield 'skillType' => ['skillType'];
+        yield 'skillLevel' => ['skillLevel'];
+        yield 'skillScore' => ['skillScore'];
+        yield 'isCertified' => ['isCertified'];
+        yield 'isActive' => ['isActive'];
+        yield 'certificationDate' => ['certificationDate'];
+        yield 'notes' => ['notes'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideEditPageFields(): iterable
+    {
+        // Edit 页面包含与 New 页面相同的字段
+        yield from self::provideNewPageFields();
+    }
+
     public function testControllerExists(): void
     {
         $client = self::createAuthenticatedClient();

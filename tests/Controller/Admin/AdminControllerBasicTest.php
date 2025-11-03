@@ -10,7 +10,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Component\HttpFoundation\Response;
 use Tourze\PHPUnitSymfonyWebTest\AbstractEasyAdminControllerTestCase;
 use Tourze\WarehouseOperationBundle\Controller\Admin\CountPlanAdminController;
 use Tourze\WarehouseOperationBundle\Controller\Admin\QualityStandardAdminController;
@@ -45,6 +44,27 @@ final class AdminControllerBasicTest extends AbstractEasyAdminControllerTestCase
         yield ['优先级'];
         yield ['任务描述'];
         yield ['作业位置'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideNewPageFields(): iterable
+    {
+        // TaskAdminController 字段
+        yield 'type' => ['type'];
+        yield 'status' => ['status'];
+        yield 'priority' => ['priority'];
+        yield 'description' => ['description'];
+        yield 'location' => ['location'];
+        yield 'isEmergency' => ['isEmergency'];
+        yield 'taskData' => ['taskData'];
+        yield 'assignedWorker' => ['assignedWorker'];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function provideEditPageFields(): iterable
+    {
+        // Edit 页面包含与 New 页面相同的字段
+        yield from self::provideNewPageFields();
     }
 
     public function __invoke(): void

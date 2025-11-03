@@ -2,6 +2,7 @@
 
 namespace Tourze\WarehouseOperationBundle\Controller\Admin;
 
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -268,6 +269,7 @@ final class CountPlanAdminController extends AbstractCrudController
     /**
      * 立即执行盘点计划
      */
+    #[AdminAction]
     public function executeCountPlan(): Response
     {
         // TODO: 实现立即执行盘点计划逻辑

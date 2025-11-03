@@ -82,6 +82,10 @@ abstract class WarehouseTask implements \Stringable
     #[Assert\Length(max: 100)]
     private ?string $location = null;
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ['comment' => '是否紧急任务', 'default' => false])]
+    #[Assert\Type(type: 'bool')]
+    private bool $isEmergency = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -230,6 +234,16 @@ abstract class WarehouseTask implements \Stringable
     public function setLocation(?string $location): void
     {
         $this->location = $location;
+    }
+
+    public function isEmergency(): bool
+    {
+        return $this->isEmergency;
+    }
+
+    public function setEmergency(bool $isEmergency): void
+    {
+        $this->isEmergency = $isEmergency;
     }
 
     public function __toString(): string

@@ -2,13 +2,13 @@
 
 namespace Tourze\WarehouseOperationBundle\Controller\Admin;
 
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -53,7 +53,7 @@ final class TaskAdminController extends AbstractCrudController
             ->setPageTitle('detail', '任务详情')
             ->setPageTitle('edit', '编辑任务')
             ->setPageTitle('new', '创建任务')
-            ->setDefaultSort(['priority' => 'DESC', 'createdAt' => 'DESC'])
+            ->setDefaultSort(['priority' => 'DESC', 'createTime' => 'DESC'])
             ->setPaginatorPageSize(25)
             ->setSearchFields(['id', 'description', 'location', 'assignedWorker'])
             ->showEntityActionsInlined()
@@ -174,11 +174,11 @@ final class TaskAdminController extends AbstractCrudController
             ->setRequired(false)
         ;
 
-        yield DateTimeField::new('createdAt', '创建时间')
+        yield DateTimeField::new('createTime', '创建时间')
             ->onlyOnDetail()
         ;
 
-        yield DateTimeField::new('updatedAt', '更新时间')
+        yield DateTimeField::new('updateTime', '更新时间')
             ->onlyOnDetail()
         ;
 
@@ -231,7 +231,6 @@ final class TaskAdminController extends AbstractCrudController
             ->add(Crud::PAGE_DETAIL, $changePriorityAction)
             ->add(Crud::PAGE_DETAIL, $pauseAction)
             ->add(Crud::PAGE_DETAIL, $resumeAction)
-            ->set(Crud::PAGE_INDEX, Action::DELETE)
             ->update(
                 Crud::PAGE_INDEX,
                 Action::NEW,
@@ -275,7 +274,7 @@ final class TaskAdminController extends AbstractCrudController
             ->add('assignedWorker')
             ->add('location')
             ->add('isEmergency')
-            ->add(DateTimeFilter::new('createdAt', '创建时间'))
+            ->add(DateTimeFilter::new('createTime', '创建时间'))
             ->add(DateTimeFilter::new('dueDate', '到期时间'))
         ;
     }
@@ -283,6 +282,7 @@ final class TaskAdminController extends AbstractCrudController
     /**
      * 分配作业员操作
      */
+    #[AdminAction]
     public function assignWorker(): Response
     {
         // TODO: 实现作业员分配逻辑
@@ -294,6 +294,7 @@ final class TaskAdminController extends AbstractCrudController
     /**
      * 调整优先级操作
      */
+    #[AdminAction]
     public function changePriority(): Response
     {
         // TODO: 实现优先级调整逻辑
@@ -305,6 +306,7 @@ final class TaskAdminController extends AbstractCrudController
     /**
      * 暂停任务操作
      */
+    #[AdminAction]
     public function pauseTask(): Response
     {
         // TODO: 实现任务暂停逻辑
@@ -315,6 +317,7 @@ final class TaskAdminController extends AbstractCrudController
     /**
      * 恢复任务操作
      */
+    #[AdminAction]
     public function resumeTask(): Response
     {
         // TODO: 实现任务恢复逻辑
