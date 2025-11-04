@@ -46,7 +46,7 @@ final class TaskAdminControllerIntegrationTest extends AbstractEasyAdminControll
      */
     private TaskAdminController $controller;
 
-    protected function onSetUp(): void
+    protected function afterEasyAdminSetUp(): void
     {
         $client = self::createAuthenticatedClient();
 
