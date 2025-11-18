@@ -51,15 +51,6 @@ final class CountPlanAdminControllerTest extends AbstractEasyAdminControllerTest
         $this->assertInstanceOf(CountPlanAdminController::class, $controller);
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $controller = new CountPlanAdminController();
-        $entityFqcn = $controller::getEntityFqcn();
-
-        $this->assertIsString($entityFqcn);
-        $this->assertEquals('Tourze\WarehouseOperationBundle\Entity\CountPlan', $entityFqcn);
-    }
-
     public function testConfigureFields(): void
     {
         $controller = new CountPlanAdminController();

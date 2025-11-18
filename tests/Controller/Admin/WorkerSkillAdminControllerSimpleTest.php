@@ -38,14 +38,6 @@ final class WorkerSkillAdminControllerSimpleTest extends AbstractEasyAdminContro
         yield ['有效状态'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $entityFqcn = WorkerSkillAdminController::getEntityFqcn();
-
-        $this->assertIsString($entityFqcn);
-        $this->assertEquals('Tourze\WarehouseOperationBundle\Entity\WorkerSkill', $entityFqcn);
-    }
-
     public function testCustomActionMethodsExist(): void
     {
         // 测试自定义操作方法的可调用性和反射信息

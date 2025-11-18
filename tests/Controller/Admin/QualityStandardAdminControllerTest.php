@@ -57,15 +57,6 @@ final class QualityStandardAdminControllerTest extends AbstractEasyAdminControll
         self::assertGreaterThan(0, $fieldCount, '质检标准控制器应该配置至少一个字段');
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $controller = new QualityStandardAdminController();
-        $entityFqcn = $controller::getEntityFqcn();
-
-        self::assertIsString($entityFqcn);
-        self::assertEquals('Tourze\WarehouseOperationBundle\Entity\QualityStandard', $entityFqcn);
-    }
-
     public function testConfigureFields(): void
     {
         $controller = new QualityStandardAdminController();

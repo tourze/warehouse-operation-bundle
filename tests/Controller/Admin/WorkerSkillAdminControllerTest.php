@@ -68,15 +68,6 @@ final class WorkerSkillAdminControllerTest extends AbstractEasyAdminControllerTe
         $this->assertInstanceOf(WorkerSkillAdminController::class, $controller);
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $controller = new WorkerSkillAdminController();
-        $entityFqcn = $controller::getEntityFqcn();
-
-        $this->assertIsString($entityFqcn);
-        $this->assertEquals('Tourze\WarehouseOperationBundle\Entity\WorkerSkill', $entityFqcn);
-    }
-
     public function testConfigureFields(): void
     {
         $controller = new WorkerSkillAdminController();

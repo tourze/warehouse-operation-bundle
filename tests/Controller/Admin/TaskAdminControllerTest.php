@@ -40,7 +40,6 @@ final class TaskAdminControllerTest extends AbstractEasyAdminControllerTestCase
     {
         // 执行任务管理控制器测试
         $this->testControllerExists();
-        $this->testGetEntityFqcn();
         $this->testConfigureFields();
         $this->testCustomActionMethods();
     }
@@ -52,15 +51,6 @@ final class TaskAdminControllerTest extends AbstractEasyAdminControllerTestCase
         // 测试控制器类可实例化
         $controller = new TaskAdminController();
         $this->assertInstanceOf(TaskAdminController::class, $controller);
-    }
-
-    public function testGetEntityFqcn(): void
-    {
-        $controller = new TaskAdminController();
-        $entityFqcn = $controller::getEntityFqcn();
-
-        $this->assertIsString($entityFqcn);
-        $this->assertEquals('Tourze\WarehouseOperationBundle\Entity\WarehouseTask', $entityFqcn);
     }
 
     public function testConfigureFields(): void

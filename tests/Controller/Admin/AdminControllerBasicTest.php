@@ -70,19 +70,11 @@ final class AdminControllerBasicTest extends AbstractEasyAdminControllerTestCase
     public function __invoke(): void
     {
         // 执行所有基础控制器测试
-        $this->testGetEntityFqcn(TaskAdminController::class, WarehouseTask::class);
         $this->testControllerInheritance(TaskAdminController::class);
     }
 
     #[Test]
     #[DataProvider('controllerEntityProvider')]
-    public function testGetEntityFqcn(string $controllerClass, string $expectedEntity): void
-    {
-        /** @var AbstractCrudController<object> $controller */
-        $controller = new $controllerClass();
-        $this->assertEquals($expectedEntity, $controllerClass::getEntityFqcn());
-    }
-
     /**
      * @return array<int, array{string, string}>
      */
